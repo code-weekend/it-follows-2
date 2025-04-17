@@ -1,10 +1,12 @@
 # It Follows 2 - Love2D Project
 
+![Logo](it-follows/assets/logo.svg)
+
 ![Love2D](https://img.shields.io/badge/Love2D-11.3-blue)
 ![Lua](https://img.shields.io/badge/Lua-5.1-blue)
 ![Luacheck](https://img.shields.io/badge/Luacheck-0.25.0-green)
 
-This is a Love2D project setup for the game "It Follows 2".
+This is a Love2D project setup for the game "It Follows 2", a spiritual successor to the famous [It Follows](https://github.com/code-weekend/it-follows).
 
 ## Requirements
 

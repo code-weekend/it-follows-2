@@ -1,0 +1,8 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="rgb(255, 182, 193)" />
+
+  <circle cx="200" cy="200" r="80" fill="rgb(255, 0, 0)" />
+  <circle cx="200" cy="200" r="60" fill="rgb(255, 102, 102)" />
+  <circle cx="200" cy="200" r="40" fill="rgb(255, 153, 153)" />
+</svg>
+
