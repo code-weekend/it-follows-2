@@ -8,7 +8,6 @@ local s
 local p1
 local enemies_manager -- Declare the enemy manager
 
-
 ---@alias GameStatus
 ---| 'idle'
 ---| 'started'
@@ -75,39 +74,46 @@ local function center(text)
 end
 
 -- Draw game
+local render_strategies = {
+  idle = function()
+    love.graphics.setColor(1, 1, 1) -- Set color to white
+
+    local start = "(Tap or click to start)"
+    love.graphics.print(start, center(start), love.graphics.getHeight() / 2)
+  end,
+  started = function()
+    love.graphics.setFont(love.graphics.newFont(18))
+    enemies_manager:draw()
+    p1:draw()
+    s:draw()
+  end,
+  game_over = function()
+    love.graphics.setColor(1, 0, 0)                  -- Set color to red
+    love.graphics.setFont(love.graphics.newFont(24)) -- Set font size to 24
+    love.graphics.print("Game Over", center("Game Over"), love.graphics.getHeight() / 2 - 20)
+
+    love.graphics.setColor(1, 1, 1) -- Set color to white
+    love.graphics.setFont(love.graphics.newFont(18))
+    love.graphics.print(state.game_over.time, center(state.game_over.time), love.graphics.getHeight() / 2 + 20)
+    love.graphics.print(state.game_over.enemies, center(state.game_over.enemies), love.graphics.getHeight() / 2 + 40)
+
+    love.graphics.setFont(love.graphics.newFont(24))
+    local restart = "(Tap or click to restart)"
+    love.graphics.print(restart, center(restart), love.graphics.getHeight() / 2 + 80)
+  end,
+}
+
 function M.draw()
-  local render_strategies = {
-    idle = function()
-      love.graphics.setColor(1, 1, 1) -- Set color to white
+  love.graphics.setFont(love.graphics.newFont(24)) -- Set font size to 24
 
-      local start = "(Tap or click to start)"
-      love.graphics.print(start, center(start), love.graphics.getHeight() / 2)
-    end,
-    started = function()
-      enemies_manager:draw() -- Draw enemies
-      p1:draw()
-      s:draw()
-    end,
-    game_over = function()
-      love.graphics.setColor(1, 0, 0) -- Set color to red
-      love.graphics.print("Game Over", center("Game Over"), love.graphics.getHeight() / 2 - 20)
-
-      love.graphics.setColor(1, 1, 1) -- Set color to white
-      love.graphics.print(state.game_over.time, center(state.game_over.time), love.graphics.getHeight() / 2 + 20)
-      love.graphics.print(state.game_over.enemies, center(state.game_over.enemies), love.graphics.getHeight() / 2 + 40)
-
-      local restart = "(Tap or click to restart)"
-      love.graphics.print(restart, center(restart), love.graphics.getHeight() / 2 + 80)
-    end,
-  }
-
-  -- render strategy
   local render = render_strategies[state.status]
-  if render then
-    return render()
+  if not render then
+    print("Invalid game status", state.status)
+    return
   end
 
-  print("Invalid game status", state.status)
+  -- render strategy
+  render()
 end
 
 return M
