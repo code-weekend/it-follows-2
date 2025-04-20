@@ -14,16 +14,12 @@ function love.load()
 
   p1 = player:new()
   enemyManager = enemies.EnemyManager:new() -- Initialize the enemy manager
-
-  -- Add some enemies for demonstration
-  enemyManager:addEnemy(100, 100)
-  enemyManager:addEnemy(200, 200)
 end
 
 -- Update game state
 function love.update(dt)
   p1:update(dt)
-  enemyManager:update(p1.pos) -- Update enemies with the player's position
+  enemyManager:update(p1.pos, dt) -- Update enemies with the player's position
 end
 
 -- Draw game
