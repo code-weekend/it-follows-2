@@ -16,7 +16,7 @@ function love.load()
 
   s = score:new()
   p1 = player:new()
-  enemies_manager = enemies.EnemyManager:new() -- Initialize the enemy manager
+  enemies_manager = enemies.EnemiesManager:new() -- Initialize the enemy manager
 end
 
 -- Update game state

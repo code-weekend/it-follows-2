@@ -58,23 +58,23 @@ end
 ---@field enemies Enemy[] - List of enemies.
 ---@field spawnTimer number - Timer to track enemy spawning.
 
-local EnemyManager = {}
-EnemyManager.__index = EnemyManager
+local EnemiesManager = {}
+EnemiesManager.__index = EnemiesManager
 
-function EnemyManager:new()
-  local instance = setmetatable({}, EnemyManager)
+function EnemiesManager:new()
+  local instance = setmetatable({}, EnemiesManager)
   instance.enemies = {}
   instance.spawnTimer = 0 -- Initialize the spawn timer
   return instance
 end
 
-function EnemyManager:addEnemy(x, y)
+function EnemiesManager:addEnemy(x, y)
   table.insert(self.enemies, Enemy:new(x, y))
 end
 
 local SPAWN_TIMEOUT = 5 -- 1 each 10 second per minute
 
-function EnemyManager:update(playerPos, dt)
+function EnemiesManager:update(playerPos, dt)
   -- Update the spawn timer
   self.spawnTimer = self.spawnTimer + dt
 
@@ -96,7 +96,7 @@ function EnemyManager:update(playerPos, dt)
   end
 end
 
-function EnemyManager:draw()
+function EnemiesManager:draw()
   for _, enemy in ipairs(self.enemies) do
     enemy:draw()
   end
@@ -104,5 +104,5 @@ end
 
 return {
   Enemy = Enemy,
-  EnemyManager = EnemyManager
+  EnemiesManager = EnemiesManager
 }
