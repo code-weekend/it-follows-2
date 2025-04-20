@@ -1,6 +1,6 @@
 # It Follows 2 - Love2D Project
 
-![Logo](it-follows/assets/logo.svg)
+https://github.com/user-attachments/assets/82b0088b-779b-4d53-9b8b-8f2ad5ad6ab1
 
 ![Love2D](https://img.shields.io/badge/Love2D-11.3-blue)
 ![Lua](https://img.shields.io/badge/Lua-5.1-blue)
