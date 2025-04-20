@@ -10,10 +10,12 @@
 local Enemy = {}
 Enemy.__index = Enemy
 
+local MAX_SIZE = 10
+
 function Enemy:new(x, y)
   local instance = setmetatable({}, Enemy)
   instance.pos = { x = x, y = y }
-  instance.radius = math.random(3, 10)
+  instance.radius = math.random(3, MAX_SIZE)
   instance.tail = {}
   return instance
 end
@@ -26,10 +28,12 @@ function Enemy:update(playerPos)
   local dy = playerPos.y - self.pos.y
 
   if dx ~= 0 then
-    self.pos.x = self.pos.x + (dx > 0 and 1 or -1) * self.radius / 2
+    local errorX = math.random(-1, 1) -- Random error for x-axis
+    self.pos.x = self.pos.x + (dx > 0 and 1 or -1) * (MAX_SIZE + 3 - self.radius) / 2 + errorX
   end
   if dy ~= 0 then
-    self.pos.y = self.pos.y + (dy > 0 and 1 or -1) * self.radius / 2
+    local errorY = math.random(-1, 1) -- Random error for y-axis
+    self.pos.y = self.pos.y + (dy > 0 and 1 or -1) * (MAX_SIZE + 3 - self.radius) / 2 + errorY
   end
 
   -- Update tail
@@ -44,6 +48,10 @@ function Enemy:draw()
   love.graphics.setColor(1, 1, 1, 0.5)
   for idx, pos in ipairs(self.tail) do
     local radius = self.radius - 1 - (idx / TRAIL_SIZE)
+    if radius < 0 then
+      radius = 0
+    end
+
     love.graphics.circle("fill", pos.x, pos.y, radius)
   end
 
@@ -56,6 +64,7 @@ end
 --- Manages all enemies in the game.
 ---@class EnemyManager
 ---@field enemies Enemy[] - List of enemies.
+---@field spawnCounter number - Spawn counter for enemies.
 ---@field spawnTimer number - Timer to track enemy spawning.
 
 local EnemiesManager = {}
@@ -64,7 +73,8 @@ EnemiesManager.__index = EnemiesManager
 function EnemiesManager:new()
   local instance = setmetatable({}, EnemiesManager)
   instance.enemies = {}
-  instance.spawnTimer = 0 -- Initialize the spawn timer
+  instance.spawnTimer = 0   -- Initialize the spawn timer
+  instance.spawnCounter = 0 -- Initialize the spawn counter
   return instance
 end
 
@@ -87,8 +97,24 @@ function EnemiesManager:update(playerPos, dt)
         math.random(0, love.graphics.getWidth()),
         math.random(0, love.graphics.getHeight())
 
+    -- update the radius of all enemies
+    for i = #self.enemies, 1, -1 do
+      local enemy = self.enemies[i]
+      enemy.radius = enemy.radius - 1
+
+      -- Remove enemies that are too small
+      if enemy.radius <= 0 then
+        table.remove(self.enemies, i)
+      end
+    end
+
     self:addEnemy(x, y)
+    self:addEnemy(x, love.graphics.getHeight() - y)
+    self:addEnemy(love.graphics.getWidth() - x, y)
+    self:addEnemy(love.graphics.getWidth() - x, love.graphics.getHeight() - y)
+
     self.spawnTimer = 0 -- Reset the spawn timer
+    self.spawnCounter = self.spawnCounter + 4
   end
 
   for _, enemy in ipairs(self.enemies) do

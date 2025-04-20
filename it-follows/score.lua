@@ -13,7 +13,7 @@ end
 
 function Score:update(enemyManager)
   -- Update the enemy count from the enemy manager
-  self.enemyCount = #enemyManager.enemies
+  self.enemyCount = enemyManager.spawnCounter
 end
 
 function Score:draw()
