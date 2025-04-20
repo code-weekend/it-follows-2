@@ -115,7 +115,7 @@ function EnemiesManager:update(playerPos, dt)
     end
 
     -- add new enemies
-    local enemies_to_add = math.random(1, 4)
+    local enemies_to_add = math.random(1, 3)
     for i = 1, enemies_to_add do
       local x = math.random(0, love.graphics.getWidth())
       local y = math.random(0, love.graphics.getHeight())
