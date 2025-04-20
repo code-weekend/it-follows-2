@@ -18,13 +18,28 @@ end
 
 function Score:draw()
   -- Calculate time elapsed
-  local currentTime = love.timer.getTime()
-  local timeElapsed = math.floor(currentTime - self.startTime)
-
   -- Display score information
   love.graphics.setColor(1, 1, 1)
-  love.graphics.print("Time Elapsed: " .. timeElapsed .. " seconds", 10, 10)
-  love.graphics.print("Enemies Count: " .. self.enemyCount, 10, 30)
+
+  local time, enemies = self:lines()
+  love.graphics.print(time, 10, 10)
+  love.graphics.print(enemies, 10, 30)
+end
+
+function Score:lines()
+  local currentTime = love.timer.getTime()
+  local time_elapsed = math.floor(currentTime - self.startTime)
+
+  -- Return the number of lines to be displayed
+  return
+      "Time Elapsed: " .. time_elapsed .. " seconds",
+      "Enemies Count: " .. self.enemyCount
+end
+
+function Score:reset()
+  -- Reset the score
+  self.startTime = love.timer.getTime()
+  self.enemyCount = 0
 end
 
 return Score
