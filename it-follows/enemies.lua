@@ -96,6 +96,24 @@ function EnemiesManager:update(playerPos, dt)
   end
 end
 
+---Check player collision with enemies
+---@param player Player
+---@return boolean
+function EnemiesManager:check_collision(player)
+  for _, enemy in ipairs(self.enemies) do
+    local dx = player.pos.x - enemy.pos.x
+    local dy = player.pos.y - enemy.pos.y
+    local distance = math.sqrt(dx * dx + dy * dy)
+
+    if distance < player.radius + enemy.radius then
+      -- Collision detected
+      return true
+    end
+  end
+
+  return false
+end
+
 function EnemiesManager:draw()
   for _, enemy in ipairs(self.enemies) do
     enemy:draw()
