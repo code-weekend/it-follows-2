@@ -10,12 +10,13 @@
 local Enemy = {}
 Enemy.__index = Enemy
 
+local MIN_SIZE = 3
 local MAX_SIZE = 10
 
 function Enemy:new(x, y)
   local instance = setmetatable({}, Enemy)
   instance.pos = { x = x, y = y }
-  instance.radius = math.random(3, MAX_SIZE)
+  instance.radius = math.random(MIN_SIZE, MAX_SIZE)
   instance.tail = {}
   return instance
 end
@@ -27,13 +28,23 @@ function Enemy:update(playerPos)
   local dx = playerPos.x - self.pos.x
   local dy = playerPos.y - self.pos.y
 
+  local distance = math.sqrt(dx * dx + dy * dy)
+  local sin = dy / distance
+  local cos = dx / distance
+
+  local movement_mod = MAX_SIZE + MIN_SIZE - self.radius
+
   if dx ~= 0 then
-    local errorX = math.random(-1, 1) -- Random error for x-axis
-    self.pos.x = self.pos.x + (dx > 0 and 1 or -1) * (MAX_SIZE + 3 - self.radius) / 2 + errorX
+    local moduleX = movement_mod * cos
+    local error = math.random(-1, 1) * moduleX / 2
+    moduleX = moduleX - error
+    self.pos.x = self.pos.x + moduleX
   end
   if dy ~= 0 then
-    local errorY = math.random(-1, 1) -- Random error for y-axis
-    self.pos.y = self.pos.y + (dy > 0 and 1 or -1) * (MAX_SIZE + 3 - self.radius) / 2 + errorY
+    local moduleY = movement_mod * sin
+    local error = math.random(-1, 1) * moduleY / 2
+    moduleY = moduleY - error
+    self.pos.y = self.pos.y + moduleY
   end
 
   -- Update tail
@@ -82,7 +93,7 @@ function EnemiesManager:addEnemy(x, y)
   table.insert(self.enemies, Enemy:new(x, y))
 end
 
-local SPAWN_TIMEOUT = 5 -- 1 each 10 second per minute
+local SPAWN_TIMEOUT = 3 -- 1 each 10 second per minute
 
 function EnemiesManager:update(playerPos, dt)
   -- Update the spawn timer
@@ -92,29 +103,27 @@ function EnemiesManager:update(playerPos, dt)
       #self.enemies == 0 or self.spawnTimer >= SPAWN_TIMEOUT
 
   if should_add_enemy then
-    -- Spawn a new enemy at a random position
-    local x, y =
-        math.random(0, love.graphics.getWidth()),
-        math.random(0, love.graphics.getHeight())
-
     -- update the radius of all enemies
     for i = #self.enemies, 1, -1 do
       local enemy = self.enemies[i]
       enemy.radius = enemy.radius - 1
 
       -- Remove enemies that are too small
-      if enemy.radius <= 0 then
+      if enemy.radius <= MIN_SIZE - 2 then
         table.remove(self.enemies, i)
       end
     end
 
-    self:addEnemy(x, y)
-    self:addEnemy(x, love.graphics.getHeight() - y)
-    self:addEnemy(love.graphics.getWidth() - x, y)
-    self:addEnemy(love.graphics.getWidth() - x, love.graphics.getHeight() - y)
+    -- add new enemies
+    local enemies_to_add = math.random(1, 4)
+    for i = 1, enemies_to_add do
+      local x = math.random(0, love.graphics.getWidth())
+      local y = math.random(0, love.graphics.getHeight())
+      self:addEnemy(x, y)
+    end
 
     self.spawnTimer = 0 -- Reset the spawn timer
-    self.spawnCounter = self.spawnCounter + 4
+    self.spawnCounter = self.spawnCounter + enemies_to_add
   end
 
   for _, enemy in ipairs(self.enemies) do
