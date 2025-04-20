@@ -1,20 +1,21 @@
--- Load some default values for our rectangle.
+local player = require("player")
+
+local p1
+
+-- Initialize game
 function love.load()
-	x, y, w, h = 20, 20, 60, 20
+  love.mouse.setVisible(false) -- Disable mouse visibility
+  love.window.setMode(0, 0, { resizable = true })
+
+  p1 = player:new()
 end
 
--- Increase the size of the rectangle every frame.
+-- Update game state
 function love.update(dt)
-	w = w + 1
-	h = h + 1
+  p1:update(dt)
 end
 
--- Draw a coloured rectangle.
+-- Draw game
 function love.draw()
-	-- In versions prior to 11.0, color component values are (0, 102, 102)
-	love.graphics.setColor(0, 0.4, 0.4)
-	love.graphics.rectangle("fill", x, y, w, h)
-
-	love.graphics.setColor(0.8, 0.4, 0)
-	love.graphics.print("Hello World", 400, 300)
+  p1:draw()
 end
