@@ -6,7 +6,7 @@ install:
 	brew install love luacheck
 
 ci:
-	sudo apt-get install -y love luacheck
+	sudo apt-get install -y love
 
 run: ./it-follows/main.lua
 	love ./it-follows
