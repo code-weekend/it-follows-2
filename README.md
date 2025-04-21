@@ -33,6 +33,10 @@ This is a Love2D project setup for the game "It Follows 2", a spiritual successo
    make lint
    ```
 
+## Deployment
+
+This project is set up to be deployed to GitHub Pages. On every push to the `main` branch, the project will be built and deployed automatically.
+
 ## Project Structure
 
 - `main.lua`: Entry point for the Love2D application.
