@@ -10,7 +10,8 @@
 local Enemy = {}
 Enemy.__index = Enemy
 
-local MIN_SIZE = 3
+local MIN_VEL = 1
+local MIN_SIZE = 5
 local MAX_SIZE = 10
 
 function Enemy:new(x, y)
@@ -32,7 +33,7 @@ function Enemy:update(playerPos)
   local sin = dy / distance
   local cos = dx / distance
 
-  local movement_mod = MAX_SIZE + MIN_SIZE - self.radius
+  local movement_mod = MAX_SIZE - self.radius + MIN_VEL
 
   if dx ~= 0 then
     local moduleX = movement_mod * cos
@@ -84,7 +85,7 @@ EnemiesManager.__index = EnemiesManager
 function EnemiesManager:new()
   local instance = setmetatable({}, EnemiesManager)
   instance.enemies = {}
-  instance.spawnTimer = 0   -- Initialize the spawn timer
+  instance.spawnTimer = 0 -- Initialize the spawn timer
   instance.spawnCounter = 0 -- Initialize the spawn counter
   return instance
 end
@@ -99,17 +100,17 @@ function EnemiesManager:update(playerPos, dt)
   -- Update the spawn timer
   self.spawnTimer = self.spawnTimer + dt
 
-  local should_add_enemy =
-      #self.enemies == 0 or self.spawnTimer >= SPAWN_TIMEOUT
+  local should_add_enemy = #self.enemies == 0 or self.spawnTimer >= SPAWN_TIMEOUT
 
   if should_add_enemy then
     -- update the radius of all enemies
     for i = #self.enemies, 1, -1 do
+      -- reverse loop to avoid index issues
       local enemy = self.enemies[i]
       enemy.radius = enemy.radius - 1
 
       -- Remove enemies that are too small
-      if enemy.radius <= MIN_SIZE - 2 then
+      if enemy.radius < MIN_SIZE then
         table.remove(self.enemies, i)
       end
     end
@@ -157,5 +158,5 @@ end
 
 return {
   Enemy = Enemy,
-  EnemiesManager = EnemiesManager
+  EnemiesManager = EnemiesManager,
 }
