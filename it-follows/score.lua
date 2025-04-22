@@ -1,5 +1,6 @@
 --- Score Module
 --- Handles the display of the game score.
+local r = require("helpers.render")
 
 local Score = {}
 Score.__index = Score
@@ -22,8 +23,11 @@ function Score:draw()
   love.graphics.setColor(1, 1, 1)
 
   local time, enemies = self:lines()
-  love.graphics.print(time, 10, 10)
-  love.graphics.print(enemies, 10, 30)
+
+  love.graphics.setColor(1, 1, 1, 0.7) -- Set color to white
+  love.graphics.setFont(love.graphics.newFont(18))
+  love.graphics.print(time, r.center(time), love.graphics.getHeight() / 2 + 20)
+  love.graphics.print(enemies, r.center(enemies), love.graphics.getHeight() / 2 + 40)
 end
 
 function Score:lines()
@@ -31,9 +35,7 @@ function Score:lines()
   local time_elapsed = math.floor(currentTime - self.startTime)
 
   -- Return the number of lines to be displayed
-  return
-      "Time Elapsed: " .. time_elapsed .. " seconds",
-      "Enemies Count: " .. self.enemyCount
+  return "Time Elapsed: " .. time_elapsed .. " seconds", "Enemies Count: " .. self.enemyCount
 end
 
 function Score:reset()

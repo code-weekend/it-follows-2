@@ -2,6 +2,7 @@ local player = require("player")
 local enemies = require("enemies")
 local score = require("score")
 local keys = require("helpers.keys")
+local r = require("helpers.render")
 
 local M = {}
 
@@ -86,23 +87,13 @@ function M.update(dt)
   end
 end
 
----Calculate the horizontal center position for a given text
----@param text string - The text to be centered
----@return number - The x-coordinate to start drawing the text so that it is centered
-local function center(text)
-  local width = love.graphics.getFont():getWidth(text)
-  return love.graphics.getWidth() / 2 - width / 2
-end
-
-local start_str = "(Tap, click or hit enter to %s)"
-
 -- Draw game
 local render_strategies = {
   idle = function()
-    love.graphics.setColor(1, 1, 1) -- Set color to white
-
-    local start = string.format(start_str, "start")
-    love.graphics.print(start, center(start), love.graphics.getHeight() / 2)
+    r.start_screen()
+  end,
+  game_over = function()
+    r.game_over(state.game_over)
   end,
   started = function()
     love.graphics.setFont(love.graphics.newFont(18))
@@ -110,23 +101,11 @@ local render_strategies = {
     p1:draw()
     s:draw()
   end,
-  game_over = function()
-    love.graphics.setColor(1, 0, 0) -- Set color to red
-    love.graphics.setFont(love.graphics.newFont(24)) -- Set font size to 24
-    love.graphics.print("Game Over", center("Game Over"), love.graphics.getHeight() / 2 - 20)
-
-    love.graphics.setColor(1, 1, 1) -- Set color to white
-    love.graphics.setFont(love.graphics.newFont(18))
-    love.graphics.print(state.game_over.time, center(state.game_over.time), love.graphics.getHeight() / 2 + 20)
-    love.graphics.print(state.game_over.enemies, center(state.game_over.enemies), love.graphics.getHeight() / 2 + 40)
-
-    local restart = string.format(start_str, "restart")
-    love.graphics.setFont(love.graphics.newFont(24))
-    love.graphics.print(restart, center(restart), love.graphics.getHeight() / 2 + 80)
-  end,
 }
 
 function M.draw()
+  r.instructions()
+
   love.graphics.setFont(love.graphics.newFont(24)) -- Set font size to 24
 
   local render = render_strategies[state.status]

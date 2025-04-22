@@ -138,22 +138,6 @@ function Player:draw()
     love.graphics.setColor(0.96, 0.87, 0.70, 0.5) -- Set color to transparent yellow like beige for the inner circle
     love.graphics.circle("fill", self.pressed_position.x, self.pressed_position.y, 10)
   end
-
-  -- add the instructions to the player
-  love.graphics.setColor(1, 1, 1, 0.5) -- Set color to white
-  love.graphics.setFont(love.graphics.newFont(12))
-  love.graphics.print("Keybindings:", 10, 30)
-  love.graphics.print("Press 'enter' to quit", 10, 50)
-  love.graphics.print("Press 'esc' to quit", 10, 70)
-  love.graphics.print("Use arrow keys or vim keys to move", 10, 90)
-
-  -- Separator
-  love.graphics.line(10, 125, 200, 130)
-
-  love.graphics.print("Gestures:", 10, 140)
-  love.graphics.print("Touch and drag to move", 10, 160)
-  love.graphics.print("Tap to start", 10, 180)
-  love.graphics.print("'Back' to quit", 10, 200)
 end
 
 return Player
