@@ -6,55 +6,79 @@ local M = {}
 
 local s
 local p1
-local enemies_manager -- Declare the enemy manager
+local enemies_manager
 
 ---@alias GameStatus
 ---| 'idle'
 ---| 'started'
 ---| 'game_over'
+---
+---@class GameOverInfo
+---@field enemies string - Score of enemies killed
+---@field time string    - Score of time survived
+---
+---@class GameState
+---@field game_over GameOverInfo|nil - The game over state, containing time and enemies
+---@field status GameStatus - The current status of the game
 
+---@type GameState
 local state = {
   game_over = nil,
-  ---@type GameStatus
-  status = 'idle',
+  status = "idle",
 }
 
 -- Restart the game
 function M.start()
-  if state.status == 'started' then
+  if state.status == "started" then
     print("Game already started")
     return -- Prevent starting a new game if one is already in progress
   end
 
-  state.status = 'started'
+  state.status = "started"
   state.game_over = nil
 
   s = score:new()
   p1 = player:new()
   enemies_manager = enemies.EnemiesManager:new()
-
-  love.mouse.setVisible(false)
 end
 
 -- Start the game on mouse press or touch
 local function game_over()
-  if state.status == 'game_over' then
+  if state.status == "game_over" then
     print("Game already over")
     return -- Prevent starting a new game if one is already over
   end
 
   local t, e = s:lines()
   state.game_over = { time = t, enemies = e }
-  state.status = 'game_over'
+  state.status = "game_over"
+end
 
-  love.mouse.setVisible(true)
+-- Game keybindings
+local function keybindings()
+  local key = love.keyboard.isDown
+
+  -- start when hit Enter
+  if key("return") then
+    return M.start()
+  end
+
+  -- quit with esc
+  if key("escape") then
+    return love.event.quit()
+  end
 end
 
 -- Update game state
 function M.update(dt)
-  if state.status ~= 'started' then
+  keybindings() -- add game keybindings
+
+  if state.status ~= "started" then
+    love.mouse.setVisible(true) -- Hide mouse cursor
     return -- Skip updates if game is over
   end
+
+  love.mouse.setVisible(false) -- Hide mouse cursor
 
   p1:update(dt)
   enemies_manager:update(p1.pos, dt) -- Update enemies with the player's position
@@ -73,12 +97,14 @@ local function center(text)
   return love.graphics.getWidth() / 2 - width / 2
 end
 
+local start_str = "(Tap, click or hit enter to %s)"
+
 -- Draw game
 local render_strategies = {
   idle = function()
     love.graphics.setColor(1, 1, 1) -- Set color to white
 
-    local start = "(Tap or click to start)"
+    local start = string.format(start_str, "start")
     love.graphics.print(start, center(start), love.graphics.getHeight() / 2)
   end,
   started = function()
@@ -88,7 +114,7 @@ local render_strategies = {
     s:draw()
   end,
   game_over = function()
-    love.graphics.setColor(1, 0, 0)                  -- Set color to red
+    love.graphics.setColor(1, 0, 0) -- Set color to red
     love.graphics.setFont(love.graphics.newFont(24)) -- Set font size to 24
     love.graphics.print("Game Over", center("Game Over"), love.graphics.getHeight() / 2 - 20)
 
@@ -97,8 +123,8 @@ local render_strategies = {
     love.graphics.print(state.game_over.time, center(state.game_over.time), love.graphics.getHeight() / 2 + 20)
     love.graphics.print(state.game_over.enemies, center(state.game_over.enemies), love.graphics.getHeight() / 2 + 40)
 
+    local restart = string.format(start_str, "restart")
     love.graphics.setFont(love.graphics.newFont(24))
-    local restart = "(Tap or click to restart)"
     love.graphics.print(restart, center(restart), love.graphics.getHeight() / 2 + 80)
   end,
 }

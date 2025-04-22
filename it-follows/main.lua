@@ -15,7 +15,6 @@ function love.load()
 
   -- scenario
   love.graphics.setBackgroundColor(1, 0.5, 0.5) -- Set background color to pink
-  love.mouse.setVisible(false)                  -- Hide mouse cursor
 end
 
 -- Update game state

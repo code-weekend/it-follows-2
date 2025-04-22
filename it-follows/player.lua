@@ -19,21 +19,56 @@ function Player:new()
   ---@type Player
   local instance = setmetatable({}, Player)
 
-  instance.pos = { x = 0, y = 0 }
-  instance.radius = 30
+  instance.pos = {
+    x = love.graphics.getWidth() / 2,
+    y = love.graphics.getHeight() / 2,
+  }
+  instance.radius = 20
   instance.color = { 0.96, 0.87, 0.70 }
+
   return instance
 end
 
-function Player:init()
-  self.pos.x = love.mouse.getX()
-  self.pos.y = love.mouse.getY()
-  self.radius = 30
-  self.color = { math.random(), math.random(), math.random() }
+---Check if there is any key down
+---@param keys string[]
+---@return boolean
+local function is_any_down(keys)
+  for _, k in ipairs(keys) do
+    if love.keyboard.isDown(k) then
+      return true
+    end
+  end
+  return false
 end
 
 function Player:update(dt)
-  self.pos.x, self.pos.y = love.mouse.getPosition()
+  local speed = 1000 -- Speed of the player
+
+  -- moving player with arrow keys and vim keybindings
+  if is_any_down({ "right", "l" }) then
+    self.pos.x = self.pos.x + speed * dt
+  elseif is_any_down({ "left", "h" }) then
+    self.pos.x = self.pos.x - speed * dt
+  end
+
+  if is_any_down({ "down", "j" }) then
+    self.pos.y = self.pos.y + speed * dt
+  elseif is_any_down({ "up", "k" }) then
+    self.pos.y = self.pos.y - speed * dt
+  end
+
+  -- limit moving player to the screen
+  if self.pos.x < self.radius then
+    self.pos.x = self.radius
+  elseif self.pos.x > love.graphics.getWidth() - self.radius then
+    self.pos.x = love.graphics.getWidth() - self.radius
+  end
+
+  if self.pos.y < self.radius then
+    self.pos.y = self.radius
+  elseif self.pos.y > love.graphics.getHeight() - self.radius then
+    self.pos.y = love.graphics.getHeight() - self.radius
+  end
 end
 
 function Player:draw()
