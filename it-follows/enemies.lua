@@ -113,13 +113,8 @@ function EnemiesManager:update(playerPos, dt)
       -- reverse loop to avoid index issues
       local enemy = self.enemies[i]
 
-      enemy.radius = enemy.radius - 1
+      enemy.radius = math.max(enemy.radius - 1, MIN_SIZE)
       enemy.velocity = enemy.velocity + 0.01 -- accelerate enemies
-
-      -- Remove enemies that are too small
-      if enemy.radius < MIN_SIZE then
-        table.remove(self.enemies, i)
-      end
     end
 
     -- add new enemies

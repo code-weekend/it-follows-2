@@ -63,7 +63,7 @@ local function keybindings()
   end
 
   -- quit with esc
-  if keys.is_any_down({ "escape", "back", "q" }) then
+  if keys.is_any_down({ "escape", "q" }) then
     return love.event.quit()
   end
 end
