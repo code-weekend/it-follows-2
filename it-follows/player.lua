@@ -7,7 +7,7 @@
 ---@field radius number - The radius of the player.
 ---@field speed number - The radius of the player.
 ---@field drag_position Position|nil - The direction of the player.
----@field moving_direction Position|nil - The direction of the player.
+---@field pressed_position Position|nil - The direction of the player.
 ---
 ---@class Position
 ---@field x number - The x coordinate of the position.
@@ -30,7 +30,7 @@ function Player:new()
   }
   instance.radius = 20
   instance.speed = 1000
-  instance.moving_direction = { x = 0, y = 0 }
+  instance.pressed_position = { x = 0, y = 0 }
   instance.color = { 0.96, 0.87, 0.70 }
 
   return instance
@@ -66,35 +66,42 @@ local function keybindings(p, dt)
   end
 end
 
-local function is_mobile()
-  local user_agent = love.system.getOS()
-  if user_agent:find("Mobile") or user_agent:find("Android") or user_agent:find("iOS") then
-    print("Mobile detected")
-    return true
-  end
-
-  local os = love.system.getOS()
-  return os == "Android" or os == "iOS"
-end
+local MAX_MAGNITUDE = 100
 
 ---Set Mobile Movements
 ---@param p Player - The player instance
 ---@param dt number - The delta time
 local function gestures(p, dt)
-  local dir = p.moving_direction
+  local drag_position = p.drag_position
+  if not drag_position then
+    return -- skip not moving
+  end
+
+  local start_x = drag_position.x
+  local start_y = drag_position.y
+
+  local dir = p.pressed_position
   if not dir then
     return -- skip not moving
   end
-  local dx = dir.x
-  local dy = dir.y
+
+  local end_x = dir.x
+  local end_y = dir.y
+
+  local dx = end_x - start_x
+  local dy = end_y - start_y
+
+  -- use distance to calculate the movement vector magnitude
 
   if dx ~= 0 or dy ~= 0 then
     local magnitude = math.sqrt(dx * dx + dy * dy)
     local sin_theta = dy / magnitude
     local cos_theta = dx / magnitude
 
-    p.pos.x = p.pos.x + cos_theta * p.speed * dt
-    p.pos.y = p.pos.y + sin_theta * p.speed * dt
+    local modified_speed = p.speed * (math.min(magnitude, MAX_MAGNITUDE) / MAX_MAGNITUDE) -- Adjust speed based on distance
+
+    p.pos.x = p.pos.x + cos_theta * modified_speed * dt
+    p.pos.y = p.pos.y + sin_theta * modified_speed * dt
   end
 
   -- limit moving player to the screen
@@ -121,21 +128,32 @@ function Player:draw()
   love.graphics.setColor(self.color)
   love.graphics.circle("fill", self.pos.x, self.pos.y, self.radius)
 
-  if is_mobile() then
-    love.graphics.setColor(1, 1, 1, 0.5) -- Set color to white
-    love.graphics.setFont(love.graphics.newFont(12))
-    love.graphics.print("Touch and drag to move", 10, 50)
-    love.graphics.print("Tap to start", 10, 70)
-    love.graphics.print("'Back' to quit", 10, 90)
-    return
+  -- Draw the movement vector line
+  if self.pressed_position and self.drag_position then
+    -- Draw the outer circle at the drag position
+    love.graphics.setColor(0.83, 0.69, 0.22, 0.8) -- Set color to gold white for the outer circle
+    love.graphics.circle("line", self.drag_position.x, self.drag_position.y, 40)
+
+    -- Draw the inner circle at the end position
+    love.graphics.setColor(0.96, 0.87, 0.70, 0.5) -- Set color to transparent yellow like beige for the inner circle
+    love.graphics.circle("fill", self.pressed_position.x, self.pressed_position.y, 10)
   end
 
   -- add the instructions to the player
   love.graphics.setColor(1, 1, 1, 0.5) -- Set color to white
   love.graphics.setFont(love.graphics.newFont(12))
+  love.graphics.print("Keybindings:", 10, 30)
   love.graphics.print("Press 'enter' to quit", 10, 50)
   love.graphics.print("Press 'esc' to quit", 10, 70)
   love.graphics.print("Use arrow keys or vim keys to move", 10, 90)
+
+  -- Separator
+  love.graphics.line(10, 125, 200, 130)
+
+  love.graphics.print("Gestures:", 10, 140)
+  love.graphics.print("Touch and drag to move", 10, 160)
+  love.graphics.print("Tap to start", 10, 180)
+  love.graphics.print("'Back' to quit", 10, 200)
 end
 
 return Player

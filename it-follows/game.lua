@@ -31,7 +31,6 @@ local state = {
 -- Restart the game
 function M.start()
   if state.status == "started" then
-    print("Game already started")
     return -- Prevent starting a new game if one is already in progress
   end
 
@@ -46,7 +45,6 @@ end
 -- Start the game on mouse press or touch
 local function game_over()
   if state.status == "game_over" then
-    print("Game already over")
     return -- Prevent starting a new game if one is already over
   end
 
@@ -139,6 +137,14 @@ function M.draw()
 
   -- render strategy
   render()
+end
+
+---Run a givn callback if the game is running
+---@param cb function - The callback to run
+function M.on_running(cb)
+  if state.status == "started" then
+    cb()
+  end
 end
 
 function M.player()

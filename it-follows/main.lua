@@ -7,17 +7,21 @@ end
 
 function love.touchpressed(id, x, y)
   game.start()
+
+  game.on_running(function()
+    local p1 = game.player()
+    p1.drag_position = { x = x, y = y }
+  end)
 end
 
 function love.touchreleased(id, x, y)
   local p1 = game.player()
-  p1.moving_direction = nil
+  p1.pressed_position = nil
 end
 
 function love.touchmoved(id, x, y, dx, dy)
   local p1 = game.player()
-  p1.moving_direction = { x = dx, y = dy }
-  p1.drag_position = { x = x, y = y }
+  p1.pressed_position = { x = x + dx, y = y + dy }
 end
 
 -- Initialize game
