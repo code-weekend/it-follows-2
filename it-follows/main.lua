@@ -9,15 +9,15 @@ function love.touchpressed(id, x, y)
   game.start()
 end
 
+function love.touchreleased(id, x, y)
+  local p1 = game.player()
+  p1.moving_direction = nil
+end
+
 function love.touchmoved(id, x, y, dx, dy)
   local p1 = game.player()
-  p1:move_with_drag_delta(dx, dy)
-
-  love.graphics.setColor(1, 1, 1)
-  -- down a line from x,y  to dx, dy
-  love.graphics.line(x, y, x + dx, y + dy)
-  love.graphics.circle("fill", x + dx, y + dy, 10)
-  love.graphics.setColor(1, 0, 0)
+  p1.moving_direction = { x = dx, y = dy }
+  p1.drag_position = { x = x, y = y }
 end
 
 -- Initialize game

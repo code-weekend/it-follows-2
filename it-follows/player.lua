@@ -6,6 +6,8 @@
 ---@field color Color - The color of the player in RGB.
 ---@field radius number - The radius of the player.
 ---@field speed number - The radius of the player.
+---@field drag_position Position|nil - The direction of the player.
+---@field moving_direction Position|nil - The direction of the player.
 ---
 ---@class Position
 ---@field x number - The x coordinate of the position.
@@ -28,6 +30,7 @@ function Player:new()
   }
   instance.radius = 20
   instance.speed = 1000
+  instance.moving_direction = { x = 0, y = 0 }
   instance.color = { 0.96, 0.87, 0.70 }
 
   return instance
@@ -36,7 +39,7 @@ end
 ---Set Desktop Movements
 ---@param p Player - The player instance
 ---@param dt number - The delta time
-local function desktop_movements(p, dt)
+local function keybindings(p, dt)
   if keys.is_any_down({ "right", "l" }) then
     p.pos.x = p.pos.x + p.speed * dt
   elseif keys.is_any_down({ "left", "h" }) then
@@ -64,39 +67,54 @@ local function desktop_movements(p, dt)
 end
 
 local function is_mobile()
+  local user_agent = love.system.getOS()
+  if user_agent:find("Mobile") or user_agent:find("Android") or user_agent:find("iOS") then
+    print("Mobile detected")
+    return true
+  end
+
   local os = love.system.getOS()
   return os == "Android" or os == "iOS"
 end
 
-function Player:update(dt)
-  -- if desktop, use arrow keys and vim keybindings
-  if is_mobile() then
-    mobile_movements(self, dt)
-    return
+---Set Mobile Movements
+---@param p Player - The player instance
+---@param dt number - The delta time
+local function gestures(p, dt)
+  local dir = p.moving_direction
+  if not dir then
+    return -- skip not moving
   end
+  local dx = dir.x
+  local dy = dir.y
 
-  desktop_movements(self, dt)
-end
+  if dx ~= 0 or dy ~= 0 then
+    local magnitude = math.sqrt(dx * dx + dy * dy)
+    local sin_theta = dy / magnitude
+    local cos_theta = dx / magnitude
 
----Mobile Movements
----@param dx number - The delta x
----@param dy number - The delta y
-function Player:move_with_drag_delta(dx, dy)
-  self.pos.x = self.pos.x + dx
-  self.pos.y = self.pos.y + dy
+    p.pos.x = p.pos.x + cos_theta * p.speed * dt
+    p.pos.y = p.pos.y + sin_theta * p.speed * dt
+  end
 
   -- limit moving player to the screen
-  if self.pos.x < self.radius then
-    self.pos.x = self.radius
-  elseif self.pos.x > love.graphics.getWidth() - self.radius then
-    self.pos.x = love.graphics.getWidth() - self.radius
+  if p.pos.x < p.radius then
+    p.pos.x = p.radius
+  elseif p.pos.x > love.graphics.getWidth() - p.radius then
+    p.pos.x = love.graphics.getWidth() - p.radius
   end
 
-  if self.pos.y < self.radius then
-    self.pos.y = self.radius
-  elseif self.pos.y > love.graphics.getHeight() - self.radius then
-    self.pos.y = love.graphics.getHeight() - self.radius
+  if p.pos.y < p.radius then
+    p.pos.y = p.radius
+  elseif p.pos.y > love.graphics.getHeight() - p.radius then
+    p.pos.y = love.graphics.getHeight() - p.radius
   end
+end
+
+function Player:update(dt)
+  -- if desktop, use arrow keys and vim keybindings
+  gestures(self, dt)
+  keybindings(self, dt)
 end
 
 function Player:draw()
