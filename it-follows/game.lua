@@ -141,4 +141,8 @@ function M.draw()
   render()
 end
 
+function M.player()
+  return p1
+end
+
 return M

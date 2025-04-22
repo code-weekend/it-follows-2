@@ -63,18 +63,6 @@ local function desktop_movements(p, dt)
   end
 end
 
----Handle mobile movements with touch input
----@param p Player - The player instance
----@param dt number - The delta time
-local function mobile_movements(p, dt)
-  local touches = love.touch.getTouches()
-  for _, id in ipairs(touches) do
-    local x, y = love.touch.getPosition(id)
-    p.pos.x = x
-    p.pos.y = y
-  end
-end
-
 local function is_mobile()
   local os = love.system.getOS()
   return os == "Android" or os == "iOS"
@@ -88,6 +76,27 @@ function Player:update(dt)
   end
 
   desktop_movements(self, dt)
+end
+
+---Mobile Movements
+---@param dx number - The delta x
+---@param dy number - The delta y
+function Player:move_with_drag_delta(dx, dy)
+  self.pos.x = self.pos.x + dx
+  self.pos.y = self.pos.y + dy
+
+  -- limit moving player to the screen
+  if self.pos.x < self.radius then
+    self.pos.x = self.radius
+  elseif self.pos.x > love.graphics.getWidth() - self.radius then
+    self.pos.x = love.graphics.getWidth() - self.radius
+  end
+
+  if self.pos.y < self.radius then
+    self.pos.y = self.radius
+  elseif self.pos.y > love.graphics.getHeight() - self.radius then
+    self.pos.y = love.graphics.getHeight() - self.radius
+  end
 end
 
 function Player:draw()

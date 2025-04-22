@@ -1,5 +1,6 @@
 app_name ?= it-follows
-app_title ?= It Follows
+app_title ?= "It Follows"
+build_folder ?= webapp
 
 i: install
 install:
@@ -12,16 +13,18 @@ run: ./it-follows/main.lua
 	love ./it-follows
 
 build: ./it-follows/
-	cd ./it-follows && zip -9 -r ${app_name}.love .
+	rm -rf ${app_name}.love
+	cd ./it-follows && zip -r ../${app_name}.love .
 
 run-build: build
-	love ./it-follows/${app_name}.love
+	love ./${app_name}.love
 
 build-web: build
-	npx -y love.js it-follows/${app_name}.love webapp/ -c -t ${app_title}
+	rm -rf ${build_folder}
+	npx -y love.js ${app_name}.love ${build_folder} -c -t ${app_title}
 
 run-web: build-web
-	npx -y http-server ./webapp/
+	npx -y http-server ${build_folder}
 
 lint: .luacheckrc
 	luacheck .
