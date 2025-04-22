@@ -5,6 +5,7 @@
 ---@class Enemy
 ---@field pos Position - The position of the enemy.
 ---@field radius number - The radius of the enemy.
+---@field velocity number - The normalizer for the enemy's velocity.
 ---@field tail Position[] - The last three positions of the enemy.
 
 local Enemy = {}
@@ -16,9 +17,12 @@ local MAX_SIZE = 10
 
 function Enemy:new(x, y)
   local instance = setmetatable({}, Enemy)
+
   instance.pos = { x = x, y = y }
   instance.radius = math.random(MIN_SIZE, MAX_SIZE)
+  instance.velocity = 0.5
   instance.tail = {}
+
   return instance
 end
 
@@ -39,13 +43,14 @@ function Enemy:update(playerPos)
     local moduleX = movement_mod * cos
     local error = math.random(-1, 1) * moduleX / 2
     moduleX = moduleX - error
-    self.pos.x = self.pos.x + moduleX
+    self.pos.x = self.pos.x + moduleX * self.velocity
   end
+
   if dy ~= 0 then
     local moduleY = movement_mod * sin
     local error = math.random(-1, 1) * moduleY / 2
     moduleY = moduleY - error
-    self.pos.y = self.pos.y + moduleY
+    self.pos.y = self.pos.y + moduleY * self.velocity
   end
 
   -- Update tail
@@ -107,7 +112,9 @@ function EnemiesManager:update(playerPos, dt)
     for i = #self.enemies, 1, -1 do
       -- reverse loop to avoid index issues
       local enemy = self.enemies[i]
+
       enemy.radius = enemy.radius - 1
+      enemy.velocity = enemy.velocity + 0.01 -- accelerate enemies
 
       -- Remove enemies that are too small
       if enemy.radius < MIN_SIZE then

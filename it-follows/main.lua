@@ -5,9 +5,9 @@ function love.mousepressed(x, y, button, istouch, presses)
   game.start()
 end
 
-function love.touchpressed(id, x, y, dx, dy, pressure)
+require("helpers.touch").init(function()
   game.start()
-end
+end)
 
 -- Initialize game
 function love.load()

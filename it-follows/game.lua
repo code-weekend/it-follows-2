@@ -1,6 +1,7 @@
 local player = require("player")
 local enemies = require("enemies")
 local score = require("score")
+local keys = require("helpers.keys")
 
 local M = {}
 
@@ -56,15 +57,13 @@ end
 
 -- Game keybindings
 local function keybindings()
-  local key = love.keyboard.isDown
-
   -- start when hit Enter
-  if key("return") then
+  if keys.is_any_down({ "return", "space" }) then
     return M.start()
   end
 
   -- quit with esc
-  if key("escape") then
+  if keys.is_any_down({ "escape", "back", "q" }) then
     return love.event.quit()
   end
 end

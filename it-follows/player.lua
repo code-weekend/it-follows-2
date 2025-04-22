@@ -16,6 +16,8 @@
 local Player = {}
 Player.__index = Player
 
+local keys = require("helpers.keys")
+
 function Player:new()
   ---@type Player
   local instance = setmetatable({}, Player)
@@ -31,31 +33,19 @@ function Player:new()
   return instance
 end
 
----Check if there is any key down
----@param keys string[]
----@return boolean
-local function is_any_down(keys)
-  for _, k in ipairs(keys) do
-    if love.keyboard.isDown(k) then
-      return true
-    end
-  end
-  return false
-end
-
 ---Set Desktop Movements
 ---@param p Player - The player instance
 ---@param dt number - The delta time
 local function desktop_movements(p, dt)
-  if is_any_down({ "right", "l" }) then
+  if keys.is_any_down({ "right", "l" }) then
     p.pos.x = p.pos.x + p.speed * dt
-  elseif is_any_down({ "left", "h" }) then
+  elseif keys.is_any_down({ "left", "h" }) then
     p.pos.x = p.pos.x - p.speed * dt
   end
 
-  if is_any_down({ "down", "j" }) then
+  if keys.is_any_down({ "down", "j" }) then
     p.pos.y = p.pos.y + p.speed * dt
-  elseif is_any_down({ "up", "k" }) then
+  elseif keys.is_any_down({ "up", "k" }) then
     p.pos.y = p.pos.y - p.speed * dt
   end
 
@@ -73,11 +63,16 @@ local function desktop_movements(p, dt)
   end
 end
 
----Set Desktop Movements
+---Handle mobile movements with touch input
 ---@param p Player - The player instance
 ---@param dt number - The delta time
 local function mobile_movements(p, dt)
-  -- TODO: implement touch events for mobile devices
+  local touches = love.touch.getTouches()
+  for _, id in ipairs(touches) do
+    local x, y = love.touch.getPosition(id)
+    p.pos.x = x
+    p.pos.y = y
+  end
 end
 
 local function is_mobile()
