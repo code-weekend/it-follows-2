@@ -1,4 +1,5 @@
 -- enemy.lua
+local world = require("helpers.world")
 
 --- Enemy Class
 --- Represents an enemy in the game.
@@ -61,20 +62,24 @@ function Enemy:update(playerPos)
 end
 
 function Enemy:draw()
+  -- Convert world coordinates to screen coordinates for drawing
+  local screen_x, screen_y = world.to_screen(self.pos.x, self.pos.y)
+
   -- Draw the tail
   love.graphics.setColor(1, 1, 1, 0.5)
   for idx, pos in ipairs(self.tail) do
+    local tail_x, tail_y = world.to_screen(pos.x, pos.y)
     local radius = self.radius - 1 - (idx / TRAIL_SIZE)
     if radius < 0 then
       radius = 0
     end
 
-    love.graphics.circle("fill", pos.x, pos.y, radius)
+    love.graphics.circle("fill", tail_x, tail_y, radius)
   end
 
   -- Draw the enemy
   love.graphics.setColor(1, 1, 1)
-  love.graphics.circle("fill", self.pos.x, self.pos.y, self.radius)
+  love.graphics.circle("fill", screen_x, screen_y, self.radius)
 end
 
 --- EnemyManager Class
@@ -90,7 +95,7 @@ EnemiesManager.__index = EnemiesManager
 function EnemiesManager:new()
   local instance = setmetatable({}, EnemiesManager)
   instance.enemies = {}
-  instance.spawnTimer = 0 -- Initialize the spawn timer
+  instance.spawnTimer = 0   -- Initialize the spawn timer
   instance.spawnCounter = 0 -- Initialize the spawn counter
   return instance
 end
@@ -99,7 +104,7 @@ function EnemiesManager:addEnemy(x, y)
   table.insert(self.enemies, Enemy:new(x, y))
 end
 
-local SPAWN_TIMEOUT = 3 -- 1 each 10 second per minute
+local SPAWN_TIMEOUT = 1 -- 1 each 10 second per minute
 
 function EnemiesManager:update(playerPos, dt)
   -- Update the spawn timer
@@ -118,10 +123,10 @@ function EnemiesManager:update(playerPos, dt)
     end
 
     -- add new enemies
-    local enemies_to_add = math.random(1, 3)
+    local enemies_to_add = math.random(3, 5)
     for i = 1, enemies_to_add do
-      local x = math.random(0, love.graphics.getWidth())
-      local y = math.random(0, love.graphics.getHeight())
+      -- Spawn enemies at the border of the visible screen
+      local x, y = world.random_edge_position()
       self:addEnemy(x, y)
     end
 
@@ -130,7 +135,7 @@ function EnemiesManager:update(playerPos, dt)
   end
 
   for _, enemy in ipairs(self.enemies) do
-    enemy:update(playerPos)
+    enemy:update(world.player_pos)
   end
 end
 
@@ -139,8 +144,8 @@ end
 ---@return boolean
 function EnemiesManager:check_collision(player)
   for _, enemy in ipairs(self.enemies) do
-    local dx = player.pos.x - enemy.pos.x
-    local dy = player.pos.y - enemy.pos.y
+    local dx = world.player_pos.x - enemy.pos.x
+    local dy = world.player_pos.y - enemy.pos.y
     local distance = math.sqrt(dx * dx + dy * dy)
 
     if distance < player.radius + enemy.radius then

@@ -3,6 +3,7 @@ local enemies = require("enemies")
 local score = require("score")
 local keys = require("helpers.keys")
 local r = require("helpers.render")
+local world = require("helpers.world")
 
 local M = {}
 
@@ -96,6 +97,9 @@ local render_strategies = {
     r.game_over(state.game_over)
   end,
   started = function()
+    -- Draw the grid background first for visual reference of movement
+    world.draw_grid()
+    
     love.graphics.setFont(love.graphics.newFont(18))
     enemies_manager:draw()
     p1:draw()
