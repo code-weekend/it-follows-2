@@ -86,8 +86,8 @@ end
 function PowerUpsManager:update(dt, player, enemies_manager)
   self.spawn_timers.killall = self.spawn_timers.killall + dt
 
-  -- setup add a killall power on each 10s
-  if self.spawn_timers.killall >= 10 then
+  -- setup add a killall power on each 5s
+  if self.spawn_timers.killall >= 5 then
     local x, y = world.random_edge_position()
     self:add_power_up(x, y, "killall")
     self.spawn_timers.killall = 0
