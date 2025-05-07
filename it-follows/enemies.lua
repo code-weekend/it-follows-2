@@ -95,18 +95,20 @@ EnemiesManager.__index = EnemiesManager
 function EnemiesManager:new()
   local instance = setmetatable({}, EnemiesManager)
   instance.enemies = {}
-  instance.spawnTimer = 0   -- Initialize the spawn timer
+  instance.spawnTimer = 0 -- Initialize the spawn timer
   instance.spawnCounter = 0 -- Initialize the spawn counter
   return instance
 end
 
-function EnemiesManager:addEnemy(x, y)
+function EnemiesManager:add_enemy(x, y)
   table.insert(self.enemies, Enemy:new(x, y))
 end
 
+local spawn_count_range = { min = 3, max = 5 }
+
 local SPAWN_TIMEOUT = 1 -- 1 each 10 second per minute
 
-function EnemiesManager:update(playerPos, dt)
+function EnemiesManager:update(dt)
   -- Update the spawn timer
   self.spawnTimer = self.spawnTimer + dt
 
@@ -123,11 +125,11 @@ function EnemiesManager:update(playerPos, dt)
     end
 
     -- add new enemies
-    local enemies_to_add = math.random(3, 5)
+    local enemies_to_add = math.random(spawn_count_range.min, spawn_count_range.max)
     for i = 1, enemies_to_add do
       -- Spawn enemies at the border of the visible screen
       local x, y = world.random_edge_position()
-      self:addEnemy(x, y)
+      self:add_enemy(x, y)
     end
 
     self.spawnTimer = 0 -- Reset the spawn timer

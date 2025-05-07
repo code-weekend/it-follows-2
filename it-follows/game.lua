@@ -1,6 +1,7 @@
 local player = require("player")
 local enemies = require("enemies")
 local score = require("score")
+local powerups = require("powerups")
 local keys = require("helpers.keys")
 local r = require("helpers.render")
 local world = require("helpers.world")
@@ -10,6 +11,7 @@ local M = {}
 local s
 local p1
 local enemies_manager
+local powerups_manager
 
 ---@alias GameStatus
 ---| 'idle'
@@ -42,6 +44,7 @@ function M.start()
   s = score:new()
   p1 = player:new()
   enemies_manager = enemies.EnemiesManager:new()
+  powerups_manager = powerups.PowerUpsManager:new()
 end
 
 -- Start the game on mouse press or touch
@@ -80,8 +83,10 @@ function M.update(dt)
   love.mouse.setVisible(false) -- Hide mouse cursor
 
   p1:update(dt)
-  enemies_manager:update(p1.pos, dt) -- Update enemies with the player's position
+  enemies_manager:update(dt) -- Update enemies with the player's position
+
   s:update(enemies_manager)
+  powerups_manager:update(dt, p1, enemies_manager)
 
   if enemies_manager:check_collision(p1) then
     game_over()
@@ -99,9 +104,10 @@ local render_strategies = {
   started = function()
     -- Draw the grid background first for visual reference of movement
     world.draw_grid()
-    
+
     love.graphics.setFont(love.graphics.newFont(18))
     enemies_manager:draw()
+    powerups_manager:draw()
     p1:draw()
     s:draw()
   end,
