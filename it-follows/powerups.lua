@@ -25,7 +25,7 @@ function PowerUp:new(x, y, kind)
   instance.radius = 10
 
   if kind == "killall" then
-    instance.color = { 1, 0.8, 0 }
+    instance.color = { 0, 0.8, 1 }
   end
 
   return instance
