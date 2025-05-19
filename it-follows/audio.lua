@@ -5,7 +5,7 @@ Audio.__index = Audio
 
 function Audio:new()
   local instance = setmetatable({}, Audio)
-  local success, bgm = pcall(love.audio.newSource, 'assets/audio/bgm.mp3', 'stream')
+  local success, bgm = pcall(love.audio.newSource, 'assets/audio/BGM1.wav', 'stream')
     if not success then
         print("Erro ao carregar bgm: " .. tostring(bgm))
     end
