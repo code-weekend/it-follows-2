@@ -5,6 +5,7 @@ local powerups = require("powerups")
 local keys = require("helpers.keys")
 local r = require("helpers.render")
 local world = require("helpers.world")
+local audio = require("audio")
 
 local M = {}
 
@@ -40,9 +41,10 @@ function M.start()
 
   state.status = "started"
   state.game_over = nil
-
+  
   s = score:new()
   p1 = player:new()
+  audio = audio:new()
   enemies_manager = enemies.EnemiesManager:new()
   powerups_manager = powerups.PowerUpsManager:new()
 end
@@ -56,6 +58,7 @@ local function game_over()
   local t, e = s:lines()
   state.game_over = { time = t, enemies = e }
   state.status = "game_over"
+  audio:bgmUpdate(state.status)
 end
 
 -- Game keybindings
