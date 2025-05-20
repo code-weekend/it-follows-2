@@ -33,6 +33,10 @@ end
 function Audio.volume(channel, volume)
 end
 
+--- Returns current volume from channel or tag.
+function Audio.get_volume(channel)
+end
+
 --- Purge memory from finished sounds.
 function Audio.purge()
 end
