@@ -1,28 +1,38 @@
 --- Audio Module
 --- Handles BGM, sound effects and volume parametes
-local Audio = {}
-Audio.__index = Audio
 
-function Audio:new()
-  local instance = setmetatable({}, Audio)
-  local success, bgm = pcall(love.audio.newSource, 'assets/audio/BGM1.wav', 'stream')
-    if not success then
-        print("Erro ao carregar bgm: " .. tostring(bgm))
-    end
-        instance.bgm = bgm
-  -- TODO: add sound effect sources
-  bgm:play()
-  return instance
+Audio = {}
+Audio.channel = {} -- Currently playing sounds. each channel hols one audio source.
+Audio.volume_levels = {} -- Volume levels associated with tags where channel volumes will be multiplied for.
+
+--- Play a sound.
+-- @param sound Filepath for sound source (ex: assets/audio/bgm.ogg).
+-- @param sourceType "stream" or "static"; stream for music and static for sfx.
+-- @param tags One or more tagas that idendify a sound. (ex: 'sfx', {"sfx, "gun"})
+-- @param volume A number from 0 to 1 specifying how loud it will be played.
+-- @param Plays the source in loop.
+function Audio.play(sound, sourceType, tags, volume, loop)
 end
 
-function Audio:bgmUpdate(status)
-  if status == "started" then
-    self.bgm:play()
-    return
-  end
-  self.bgm:stop()
-  -- TODO: handle change bgm at certain score milestones
-  -- TODO: compose original music =D
+--- Pauses a channel or tag.
+-- @param channel Determines which channel (number) or tag (string) will be affected;
+function Audio.pause(channel)
 end
 
-return Audio
+--- Resumes a channel or tag from pause.
+function Audio.resume(channel)
+end
+
+--- Stops a channel or tag immediatelyor after the clip conclusion.
+-- @param finish If true, sounds will only stop after finishing.
+function Audio.stop(channel, finish)
+end
+
+
+--- Sets volume for channel or tag.
+function Audio.volume(channel, volume)
+end
+
+--- Purge memory from finished sounds.
+function Audio.purge()
+end
