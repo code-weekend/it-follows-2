@@ -1,5 +1,5 @@
 --- Audio Module
---- Handles BGM, sound effects and volume parametes
+--- Handles background music, sound effects and volume. Each channel holds a sound source.
 Audio = {}
 Audio.__index = Audio
 
@@ -28,12 +28,11 @@ end
 function Audio:resume(channel)
 end
 
---- Stops a channel or tag immediatelyor after the clip conclusion.
+--- Stops a channel or tag immediately or after the clip conclusion.
 --- @param channel string|number
 --- @param finish boolean - If true, sounds will only stop after finishing.
-function Audio:newstop(channel, finish)
+function Audio:stop(channel, finish)
 end
-
 
 --- Sets volume for channel or tag.
 --- @param channel string|number
